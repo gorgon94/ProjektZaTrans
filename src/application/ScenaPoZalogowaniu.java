@@ -19,7 +19,7 @@ public class ScenaPoZalogowaniu
 				Main.window.setScene(scene);
 				Main.window.centerOnScreen();
 				Main.window.show();
-				
+				Main.window.show();
 			} 
 			catch (IOException e) {e.printStackTrace();}
 		}
