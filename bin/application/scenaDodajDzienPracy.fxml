@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.web.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="405.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ScenaDodajDzienPracy">
+   <children>
+      <HBox prefHeight="106.0" prefWidth="630.0">
+         <children>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Data:" />
+                  <HBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <DatePicker fx:id="kalendarz" onAction="#dayChosen" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" text="Szukaj">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <Label text="Aktywnosci:" />
+                  <ListView fx:id="aktywnosciListView" onMousePressed="#aktywnosciChosen" prefHeight="200.0" prefWidth="200.0" />
+               </children>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Wybierz pracowników:" />
+                  <ListView fx:id="pracownicyListView" onMousePressed="#pracownikChosen" prefHeight="200.0" prefWidth="200.0" />
+               </children>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Pracownicy w aktywności:" />
+                  <ListView fx:id="wybraniPracownicyListView" onMousePressed="#wybranyPracownikChosen" prefHeight="200.0" prefWidth="200.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </ListView>
+               </children>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+         <VBox.margin>
+            <Insets left="5.0" right="5.0" top="5.0" />
+         </VBox.margin>
+      </HBox>
+      <Separator prefHeight="13.0" prefWidth="640.0" />
+      <HBox VBox.vgrow="ALWAYS">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <VBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <HBox VBox.vgrow="ALWAYS">
+                           <children>
+                              <Label text="Nazwa aktywnosci:" />
+                              <TextField fx:id="nazwaAktywnosciText" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                        </HBox>
+                        <HBox VBox.vgrow="ALWAYS">
+                           <children>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Godzina od:" />
+                                    <HBox VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <ComboBox fx:id="godzinaOdCombo" prefWidth="150.0" />
+                                          <Label text=":">
+                                             <HBox.margin>
+                                                <Insets left="3.0" right="3.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <ComboBox fx:id="minutaOdCombo" prefWidth="150.0" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label text="Godzina do:" />
+                                    <HBox VBox.vgrow="ALWAYS">
+                                       <children>
+                                          <ComboBox fx:id="godzinaDoCombo" prefWidth="150.0" />
+                                          <Label text=":">
+                                             <HBox.margin>
+                                                <Insets left="3.0" right="3.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <ComboBox fx:id="minutaDoCombo" prefWidth="150.0" />
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </HBox>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </VBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="10.0" top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <Label text="Opis" />
+                  <TextArea fx:id="opisTextArea" VBox.vgrow="ALWAYS" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <VBox HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label text="Suma godzin:" />
+                              <HBox VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Label text="0" />
+                                    <Label text="h">
+                                       <HBox.margin>
+                                          <Insets left="3.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="bUsunZaznaczenie" mnemonicParsing="false" onMousePressed="#bUsunZaznaczenieClicked" text="Usuń zaznaczenie">
+                           <HBox.margin>
+                              <Insets right="30.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="bDodajAktywnosc" mnemonicParsing="false" onMousePressed="#bDodajAktywnoscClicked" text="Dodaj nową aktywność" />
+                     </children>
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="208.0" prefWidth="11.0" />
+            <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <HBox>
+                     <children>
+                        <Label text="Pracownik:" />
+                        <Label text="nie wybrano pracownika">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <VBox prefWidth="120.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label text="Stawka" />
+                              <TextField fx:id="stawkaText" prefHeight="25.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                           </children>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label text="Waluta:" />
+                              <ComboBox fx:id="walutaCombo" prefHeight="25.0" prefWidth="107.0" VBox.vgrow="ALWAYS" />
+                           </children>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <VBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label text="Stawka firmy:" />
+                        <HBox VBox.vgrow="ALWAYS">
+                           <children>
+                              <TextField fx:id="stawkaFirmyText" prefHeight="25.0" prefWidth="140.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <HBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <VBox HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label text="Wynagrodzenie pracowika:" />
+                              <HBox VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Label text="0" />
+                                    <Label text="PLN">
+                                       <HBox.margin>
+                                          <Insets left="3.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label text="Zarobek firmy:" />
+                              <HBox>
+                                 <children>
+                                    <Label text="0" />
+                                    <Label text="PLN">
+                                       <HBox.margin>
+                                          <Insets left="3.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <HBox>
+                     <children>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="bDodajDzien" mnemonicParsing="false" onMousePressed="#bDodajDzienClicked" text="Dodaj nowy dzień">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="20.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin></VBox>
+         </children>
+      </HBox>
+   </children>
+</VBox>

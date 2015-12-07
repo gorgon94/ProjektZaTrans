@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="226.0" prefWidth="334.0" xmlns="http://javafx.com/javafx/8.0.66" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Main">
+   <children>
+      <GridPane layoutX="24.0" layoutY="52.0" prefHeight="139.0" prefWidth="288.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="106.0" minWidth="10.0" prefWidth="87.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="169.0" minWidth="10.0" prefWidth="125.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="52.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="77.0" minHeight="8.0" prefHeight="35.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="124.0" minHeight="10.0" prefHeight="76.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Login:" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Label prefHeight="17.0" prefWidth="35.0" text="Hasło:" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+            <TextField id="TFLogin" fx:id="TFLogin" GridPane.columnIndex="1" />
+            <TextField id="TFHaslo" fx:id="TFHaslo" prefHeight="25.0" prefWidth="144.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="bZaloguj" alignment="CENTER" mnemonicParsing="false" onAction="#logowanie" text="Zaloguj się" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>
