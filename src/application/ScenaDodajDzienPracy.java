@@ -15,9 +15,18 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import wyjatki.DodanoJuzAktywnoscOTakiejNazwieException;
+import wyjatki.DodanoPracownikaException;
+import wyjatki.NajpierwDodajAktywnosciException;
+import wyjatki.NieMoznaNadpisacAktywnosciException;
+import wyjatki.PodanyDzienJestJuzWBazieException;
+import wyjatki.ProszeWpisacNazweException;
+import wyjatki.WybierzDzienException;
+import wyjatki.WybierzGodzinyPracyException;
 
 
 public class ScenaDodajDzienPracy implements Initializable
@@ -26,8 +35,9 @@ public class ScenaDodajDzienPracy implements Initializable
 	@FXML DatePicker kalendarz;
 	@FXML ComboBox<String> godzinaOdCombo, minutaOdCombo, godzinaDoCombo, minutaDoCombo, walutaCombo;
 	@FXML ListView<String> pracownicyListView, wybraniPracownicyListView, aktywnosciListView;
-	@FXML TextField nazwaAktywnosciText;
+	@FXML TextField nazwaAktywnosciText, stawkaText, stawkaFirmyText;
 	@FXML TextArea opisTextArea;
+	@FXML Label wybranyPracownikLabel;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	ArrayList<WybranyPracownik> tempPozostali = new ArrayList<WybranyPracownik>();
 	ArrayList<WybranyPracownik> tempWybrani = new ArrayList<WybranyPracownik>();
@@ -46,7 +56,9 @@ public class ScenaDodajDzienPracy implements Initializable
 	
 	int isDayInDatabase = -1; //-1 nie wybrano dnia; 1 jest juz taki dzien w bazie; 0 nie ma takiego dnia w bazie
 	int aktywnoscChosen = 0;//  aktywnoscChosen >-1  wybrano o aktywnosc o indeskie aktywnoscChosen
+	int wybranyPracownikChosen = -1;
 	boolean isAktywnoscChosen = false; //false nie wybrano aktywnosci
+	boolean isWybranyPracownikChosen = false; //false -> nie wybrano zadnego pracownika
 	String aktywnoscItemSelected = null; //aktywnosc -> do doubleclicka
 	String pracownikItemSelected = null; //pracownik -> do double clicka
 	String wybranyPracownikItemSelected = null; //wybrany pracownik -> do double clicka
@@ -98,7 +110,7 @@ public class ScenaDodajDzienPracy implements Initializable
 	}
 	
 //////////////////////////////////////////////////////////////////////////////////////////////obs�uga ListView
-	public void aktywnosciChosen() throws SQLException
+	public void aktywnosciChosen() throws SQLException, NajpierwDodajAktywnosciException
 	{
 		try
 		{	
@@ -121,27 +133,25 @@ public class ScenaDodajDzienPracy implements Initializable
 				//czy aktywnosc wybrana  i co wybrano
 				nazwaAktywnosciText.setText(listaNowychAktywnosci.get(aktywnoscChosen).getNazwa());
 				opisTextArea.setText(listaNowychAktywnosci.get(aktywnoscChosen).getOpis());
-				//godzinaOdCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaOd().substring(0, 2));
-				//godzinaDoCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaDo().substring(0, 2));
-				//minutaDoCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaDo().substring(3, 5));
-				//minutaOdCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaOd().substring(3, 5));
+				godzinaOdCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaOd().substring(0, 2));
+				godzinaDoCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaDo().substring(0, 2));
+				minutaDoCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaDo().substring(3, 5));
+				minutaOdCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaOd().substring(3, 5));
 			}
 			isAktywnoscChosen = true;
+			
 		} 
 		catch(ArrayIndexOutOfBoundsException e) 
 		{  // wywala blad, gdy nie ma aktywnosci
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Uwaga!");
-			alert.setHeaderText(null);
-			alert.setContentText("Najpierw dodaj aktywno�ci");
-			alert.showAndWait();       
 			dodajPracownikowDoListyGlownej();
+			try{throw new wyjatki.NajpierwDodajAktywnosciException();}
+			catch(NajpierwDodajAktywnosciException er){}	
 		}
 	}
 	
 	public void usunAktywnosc() throws SQLException
 	{
-		/*Alert alert = new Alert(AlertType.CONFIRMATION);
+		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Potwierdzenie");
 		alert.setHeaderText(null);
 		alert.setContentText("Usun�� aktywno��?");
@@ -149,12 +159,10 @@ public class ScenaDodajDzienPracy implements Initializable
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK)
 		{///////////////////obsluga usuwania aktywnosci
-			listaNazwAktywnosci.remove(aktywnoscChosen);
-			listaNowychAktywnosci.remove(aktywnoscChosen);
-			aktywnosciListView.refresh();
-			clearAktywnosci();
+			
+			
 		}/////////////////////
-		else{}*/
+		else{}
 	}
 	
 	public void pracownikChosen()
@@ -217,7 +225,7 @@ public class ScenaDodajDzienPracy implements Initializable
 				Alert alert = new Alert(AlertType.CONFIRMATION);
 				alert.setTitle("Potwierdzenie");
 				alert.setHeaderText(null);
-				alert.setContentText("Usun�� pracownika?");
+				alert.setContentText("Usuń pracownika?");
 				
 				Optional<ButtonType> result = alert.showAndWait();
 				if (result.get() == ButtonType.OK)
@@ -238,18 +246,32 @@ public class ScenaDodajDzienPracy implements Initializable
 					}///////////////////////////
 					else//jesli wybrano aktywnosc
 					{////////////////////////////
-						
-						
-						
+						//nie robimy póki co nic, powinna byc tu modyfikacja (dodanie i usuwanie pracownikow konkretnej aktywnosci)			
 					}///////////////////////
 				}
 				else{}
 			}
 			else
 			{
+				wybranyPracownikChosen = wybraniPracownicyListView.getSelectionModel().getSelectedIndex();
 				wybranyPracownikItemSelected = wybraniPracownicyListView.getSelectionModel().getSelectedItem();
+				
+				//obsługa po oneClicku (pokazanie danych pracownika oraz ich edycja po odznaczeniu zaznaczenia)
+				if(isAktywnoscChosen == false)//jesli nie wybrano aktywnosci 
+				{
+					wybranyPracownikLabel.setText(wybranyPracownikItemSelected);
+					stawkaText.setText(Float.toString(tempWybrani.get(wybranyPracownikChosen).getStawka()));
+					stawkaFirmyText.setText(Float.toString(tempWybrani.get(wybranyPracownikChosen).getStawkaFirmy()));
+					walutaCombo.setValue(tempWybrani.get(wybranyPracownikChosen).getWaluta());
+				}
+				else // jeśli wybrano aktywnosc
+				{
+					//pokazujemy jakie stawki oraz walute ma pracownik
+					wyswietlDaneWybranychPracownikow();
+				}
 			}
-			aktywnoscItemSelected=null;
+			aktywnoscItemSelected=null;		
+			isWybranyPracownikChosen = true;
 		}
 		catch(Exception e)
 		{
@@ -285,16 +307,13 @@ public class ScenaDodajDzienPracy implements Initializable
 							String godzinaDo = godzinaDoCombo.getValue();
 							String minutaOd = minutaOdCombo.getValue();
 							String minutaDo = minutaDoCombo.getValue();
-							//if(godzinaOd == "" || godzinaDo == "" || minutaOd == "" || minutaDo == "")
-							//{
-							/*	alert = new Alert(AlertType.INFORMATION);
-								alert.setTitle("Uwaga!");
-								alert.setHeaderText(null);
-								alert.setContentText("Wybierz godziny pracy");
-							/	alert.showAndWait();*/
-						//	}
-						//	else
-						//	{
+							if(godzinaOd == "" || godzinaDo == "" || minutaOd == "" || minutaDo == "")
+							{
+								try{throw new wyjatki.WybierzGodzinyPracyException();}
+								catch(WybierzGodzinyPracyException er){}	
+							}
+							else
+							{
 								godzinaOd = godzinaOd + ":" + minutaOd;
 								godzinaDo = godzinaDo + ":" + minutaDo;
 								
@@ -310,55 +329,30 @@ public class ScenaDodajDzienPracy implements Initializable
 								
 								//wyczyszczenie i dodanie wszystkich pracownikow do tempPozostali wraz z nowym id
 								dodajPracownikowDoListyGlownej();
-								
-								System.out.println();
-								System.out.println();
-								System.out.println();
-								System.out.println("-------------Lista Pozosta�ych Pracownikow----------------");
-								for(int i=0; i<listaPozostalychPracownikow.size();i++)
-								{
-									System.out.println(listaPozostalychPracownikow.get(i).getIdNowejAktywnosci()+" "+listaPozostalychPracownikow.get(i).getNazwaWybranegoPracownika());
-									
-								}
-								
-								System.out.println();
-								System.out.println("-------------Lista Wybranych Pracownikow----------------");
-								for(int i=0; i<listaWybranychPracownikow.size();i++)
-								{
-									System.out.println(listaWybranychPracownikow.get(i).getIdNowejAktywnosci()+" "+listaWybranychPracownikow.get(i).getNazwaWybranegoPracownika());
-								}
-								
+								clearDaneAktywnosci();
 								aktywnosciListView.setItems(listaNazwAktywnosci);
-							//}	
-							} 
-							else {}//jesli uzytkownik wcisnie cancel		
+							}	
+						} 
+						else {}//jesli uzytkownik wcisnie cancel		
 					}
 					else
 					{
-						Alert alert = new Alert(AlertType.INFORMATION);
-						alert.setTitle("Uwaga!");
-						alert.setHeaderText(null);
-						alert.setContentText("Dodano ju� aktywno�� o takiej samej nazwie. Wybierz inn� nazw�");
-						alert.showAndWait();
+						try{throw new wyjatki.DodanoJuzAktywnoscOTakiejNazwieException();}
+						catch(DodanoJuzAktywnoscOTakiejNazwieException er){}	
 					}
 				}
 				else
 				{
-					Alert alert = new Alert(AlertType.INFORMATION);
-					alert.setTitle("Uwaga!");
-					alert.setHeaderText(null);
-					alert.setContentText("Prosz� wpisa� nazw�");
-					alert.showAndWait();
+					try{throw new wyjatki.ProszeWpisacNazweException();}
+					catch(ProszeWpisacNazweException er){}	
 				}
 			}
 			else
 			{
-				Alert alert = new Alert(AlertType.INFORMATION);
-				alert.setTitle("Uwaga!");
-				alert.setHeaderText(null);
-				alert.setContentText("Nie mo�na nadpisa� aktywno�ci. Prosz� usun�� zaznaczenie");
-				alert.showAndWait();
+				try{throw new wyjatki.NieMoznaNadpisacAktywnosciException();}
+				catch(NieMoznaNadpisacAktywnosciException er){}
 			}
+			bUsunZaznaczenieClicked();
 		}
 		catch(Exception e)
 		{
@@ -366,32 +360,21 @@ public class ScenaDodajDzienPracy implements Initializable
 		}
 	}
 	
-	public void bUsunZaznaczenieClicked() throws SQLException
-	{
-		
-	}
-	
 	public void bDodajDzienClicked()
 	{
 		if (isDayInDatabase == -1)
 		{
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Uwaga!");
-			alert.setHeaderText(null);
-			alert.setContentText("Wybierz dzie�.");
-			alert.showAndWait();
+			try{throw new wyjatki.WybierzDzienException();}
+			catch(WybierzDzienException er){}
 		}
 		else if (isDayInDatabase == 1)
 		{
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Uwaga!");
-			alert.setHeaderText(null);
-			alert.setContentText("Podany dzie� jest ju� w bazie danych. Wybierz inny.");
-			alert.showAndWait();
+			try{throw new wyjatki.PodanyDzienJestJuzWBazieException();}
+			catch(PodanyDzienJestJuzWBazieException er){}
 		}
 		else
 		{
-			try //osb�uga jesli wszytsko ok
+			try //obsługa jesli wszytsko ok
 			{
 				
 			}
@@ -400,8 +383,86 @@ public class ScenaDodajDzienPracy implements Initializable
 				e.printStackTrace();
 			}
 		}
-	}	
-////////////////////////////////////////////////////////////////////////////////////////////////////////////dodatkowe metody
+	}
+	
+	public void bUsunZaznaczenieClicked() throws SQLException
+	{
+		
+		wybranyPracownikLabel.setText("Nie wybrano pracownika");
+		isWybranyPracownikChosen = false;
+		stawkaText.clear();
+		stawkaFirmyText.clear();
+		walutaCombo.setValue("");
+		isAktywnoscChosen = false;//odznaczenie w danych aktywnosci
+		aktywnoscItemSelected = null; //usuniecie double clikca z aktywnosic
+		clearDaneAktywnosci(); // wyczyszczenie okna
+		dodajPracownikowDoListyGlownej(); // wyczysczenie okien z pracownikami oraz załadowanie wszystkich pracownikow z bazy do pozostalych pracownikkoa
+	}
+	
+	public void bZapiszPracownikaClicked()
+	{
+		try
+		{
+			Float stawka = Float.parseFloat(stawkaText.getText());
+			Float stawkaFirmy = Float.parseFloat(stawkaFirmyText.getText());
+			String waluta = walutaCombo.getValue();
+			
+			tempWybrani.get(wybranyPracownikChosen).setStawka(stawka);
+			tempWybrani.get(wybranyPracownikChosen).setStawkaFirmy(stawkaFirmy);
+			tempWybrani.get(wybranyPracownikChosen).setWaluta(waluta);
+			
+			try{throw new wyjatki.DodanoPracownikaException();}
+			catch(DodanoPracownikaException er){}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+///////////////////////////////////////////////////////////////////////////////////////////dodatkowe metody
+	public void wyswietlDaneWybranychPracownikow()
+	{
+		stawkaText.clear();
+		stawkaFirmyText.clear();
+		walutaCombo.setValue("");
+		wybranyPracownikLabel.setText("Nie wybrano pracownika");	
+		for(int i=0; i<listaWybranychPracownikow.size(); i++)
+		{
+			if(listaWybranychPracownikow.get(i).getIdNowejAktywnosci() == aktywnoscChosen && listaWybranychPracownikow.get(i).getNazwaWybranegoPracownika().equals(wybranyPracownikItemSelected))
+			{	
+				stawkaText.setText(Float.toString(listaWybranychPracownikow.get(i).getStawka())); 
+				stawkaFirmyText.setText(Float.toString(listaWybranychPracownikow.get(i).getStawkaFirmy()));
+				walutaCombo.setValue(listaWybranychPracownikow.get(i).getWaluta());
+			}
+		}
+	}
+	
+	public void usunZaznaczenie() throws SQLException //fukcja wykonujaca sie po kliknieciu w coś poza elementami okna
+	{
+		if(isWybranyPracownikChosen == true)
+		{
+			try
+			{	//edycja danych pracownika
+				float stawka = Float.parseFloat(stawkaText.getText());
+				float stawkaFirmy = Float.parseFloat(stawkaFirmyText.getText());
+				String waluta = walutaCombo.getValue();
+				
+				wybranyPracownikLabel.setText(tempWybrani.get(wybranyPracownikChosen).getNazwaWybranegoPracownika());
+				tempWybrani.get(wybranyPracownikChosen).setStawka(stawka);
+				tempWybrani.get(wybranyPracownikChosen).setStawkaFirmy(stawkaFirmy);
+				tempWybrani.get(wybranyPracownikChosen).setWaluta(waluta);
+			}
+			catch(Exception e)
+			{
+				System.err.println(e);
+			}	
+		}
+		wybranyPracownikLabel.setText("Nie wybrano pracownika");
+		isWybranyPracownikChosen = false;
+		stawkaText.clear();
+		stawkaFirmyText.clear();
+		walutaCombo.setValue("");
+	}
 	
 	public void wyswietlPozostalychIWybranychPracownikow()
 	{
@@ -441,7 +502,7 @@ public class ScenaDodajDzienPracy implements Initializable
 		listaWybranychPracownikowString.clear();
 		for(int i=0; i<Main.listaPracownikow.size();i++)
 		{
-			tempPozostali.add(new WybranyPracownik(id,Main.listaPracownikow.get(i),0,0,"waluta"));
+			tempPozostali.add(new WybranyPracownik(id,Main.listaPracownikow.get(i),0,0," "));
 			listaPozostalychPracownikowString.add(Main.listaPracownikow.get(i).getNazwaPracownika());
 		}
 		pracownicyListView.setItems(listaPozostalychPracownikowString); 
@@ -453,19 +514,13 @@ public class ScenaDodajDzienPracy implements Initializable
 	{
 		if (isDayInDatabase == -1)
 		{
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Uwaga!");
-			alert.setHeaderText(null);
-			alert.setContentText("Wybierz dzie�.");
-			alert.showAndWait();
+			try{throw new wyjatki.WybierzDzienException();}
+			catch(WybierzDzienException er){}
 		}
 		else if (isDayInDatabase == 1)
 		{
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Uwaga!");
-			alert.setHeaderText(null);
-			alert.setContentText("Podany dzie� jest ju� w bazie danych. Wybierz inny.");
-			alert.showAndWait();
+			try{throw new wyjatki.PodanyDzienJestJuzWBazieException();}
+			catch(PodanyDzienJestJuzWBazieException er){}
 		}
 		else
 		{

@@ -328,7 +328,7 @@ public class ScenaDniPracy implements Initializable
 		sumaGodzin = Float.parseFloat(sumaGodzinLabel.getText());
 		float stawka = Float.parseFloat(stawkaText.getText());
 		wynagrodzeniePracownika = sumaGodzin * stawka;
-		// zaokr¹glanie do 2 miejsca po przecinku
+		// zaokrï¿½glanie do 2 miejsca po przecinku
 		wynagrodzeniePracownika *= 100;
 		wynagrodzeniePracownika = Math.round(wynagrodzeniePracownika);
 		wynagrodzeniePracownika /= 100;
@@ -340,7 +340,7 @@ public class ScenaDniPracy implements Initializable
 		// godzina roczpoczecia pracy
 		float godzinaOd = Float.parseFloat(godzinaOdCombo.getValue());
 		float minutaOd = Float.parseFloat(minutaOdCombo.getValue()) / 60;
-		// godzina zakoñczenia pracy
+		// godzina zakoï¿½czenia pracy
 		float godzinaDo = Float.parseFloat(godzinaDoCombo.getValue());
 		float minutaDo = Float.parseFloat(minutaDoCombo.getValue()) / 60;
 
@@ -356,7 +356,7 @@ public class ScenaDniPracy implements Initializable
 	{
 		float przychod = (Float.parseFloat(stawkaFirmyText.getText())) * sumaGodzin;
 		float zarobek = przychod - wynagrodzeniePracownika;
-		// zaokr¹glanie do 2 miejsca po przecinku
+		// zaokrï¿½glanie do 2 miejsca po przecinku
 		zarobek *= 100;
 		zarobek = Math.round(zarobek);
 		zarobek /= 100;
@@ -395,7 +395,10 @@ public class ScenaDniPracy implements Initializable
 			clearAll();
 			root = FXMLLoader.load(getClass().getResource("scenaPoZalogowaniu.fxml"));
 			scene = new Scene(root);
+			Main.window.close();
 			Main.window.setScene(scene);
+			Main.window.centerOnScreen();
+			Main.window.show();
 
 		}
 		catch (IOException e) 
@@ -410,11 +413,11 @@ public class ScenaDniPracy implements Initializable
 		// selectedAktywnosc=-1, selectedPracownik=-1;
 		if (selectedDzien == -1) 
 		{
-			JOptionPane.showMessageDialog(null, "Wybierz dzieñ pracy");
+			JOptionPane.showMessageDialog(null, "Wybierz dzieï¿½ pracy");
 		} 
 		else if (selectedAktywnosc == -1) 
 		{
-			JOptionPane.showMessageDialog(null, "Wybierz aktywnoœæ");
+			JOptionPane.showMessageDialog(null, "Wybierz aktywnoï¿½ï¿½");
 		}
 		else 
 		{
@@ -426,7 +429,7 @@ public class ScenaDniPracy implements Initializable
 				daneDoTableView(selectedMiesiac, selectedRok);
 				selectedDzien = -1;
 				selectedAktywnosc = -1;
-				JOptionPane.showMessageDialog(null, "Zaktualizowano dane aktywnoœci");
+				JOptionPane.showMessageDialog(null, "Zaktualizowano dane aktywnoï¿½ci");
 			} 
 			else
 			{
@@ -440,7 +443,7 @@ public class ScenaDniPracy implements Initializable
 					selectedDzien = -1;
 					selectedAktywnosc = -1;
 					selectedPracownik = -1;
-					JOptionPane.showMessageDialog(null, "Zaktualizowano dane aktywnoœci i pracownika");
+					JOptionPane.showMessageDialog(null, "Zaktualizowano dane aktywnoï¿½ci i pracownika");
 				} 
 				catch (NumberFormatException e) 
 				{

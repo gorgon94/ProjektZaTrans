@@ -116,8 +116,10 @@ public class Main extends Application
 	    	Platform.runLater(() -> username.requestFocus());
 	
 	    	// Convert the result to a username-password-pair when the login button is clicked.
-	    	dialog.setResultConverter(dialogButton -> {
-	    	    if (dialogButton == loginButtonType) {
+	    	dialog.setResultConverter(dialogButton -> 
+	    	{
+	    	    if (dialogButton == loginButtonType) 
+	    	    {
 	    	        return new Pair<>(username.getText(), password.getText());
 	    	    }
 	    	    return null;
@@ -146,7 +148,6 @@ public class Main extends Application
 	    			alert.showAndWait();
 	    			scenaLogowania();
 	    		}
-
 	    	});
     	}	
     	catch(Exception e)

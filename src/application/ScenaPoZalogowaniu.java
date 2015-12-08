@@ -16,9 +16,9 @@ public class ScenaPoZalogowaniu
 			{
 				root = FXMLLoader.load(getClass().getResource("scenaDniPracy.fxml"));
 				scene = new Scene(root,960,540);
+				Main.window.close();
 				Main.window.setScene(scene);
 				Main.window.centerOnScreen();
-				Main.window.show();
 				Main.window.show();
 			} 
 			catch (IOException e) {e.printStackTrace();}
@@ -32,7 +32,10 @@ public class ScenaPoZalogowaniu
 			{
 				root = FXMLLoader.load(getClass().getResource("scenaPracownicy.fxml"));
 				scene = new Scene(root,960,540);
+				Main.window.close();
 				Main.window.setScene(scene);
+				Main.window.centerOnScreen();
+				Main.window.show();
 			} 
 			catch (IOException e) {System.err.println(e);}
 		}
@@ -45,7 +48,10 @@ public class ScenaPoZalogowaniu
 			{
 				root = FXMLLoader.load(getClass().getResource("scenaRozliczenia.fxml"));
 				scene = new Scene(root);
+				Main.window.close();
 				Main.window.setScene(scene);
+				Main.window.centerOnScreen();
+				Main.window.show();
 			} 
 			catch (IOException e) {e.printStackTrace();}
 		}
