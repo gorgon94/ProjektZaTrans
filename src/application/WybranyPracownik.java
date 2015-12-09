@@ -16,6 +16,11 @@ public class WybranyPracownik extends Pracownik
 		this.setStawkaFirmy(stawkaFirmy);
 		this.setWaluta(waluta);
 	}
+	
+	public int getIdPrac()
+	{
+		return p.getId();
+	}
 
 	public String getNazwaWybranegoPracownika()
 	{

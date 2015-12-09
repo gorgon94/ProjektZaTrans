@@ -51,7 +51,7 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy pobieraniu danych. SprawdŸ po³¹czenie internetowe");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy pobieraniu danych. Sprawdï¿½ poï¿½ï¿½czenie internetowe");
 			System.err.println(e);
 		}
 	}
@@ -87,7 +87,7 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy pobieraniu danych. SprawdŸ po³¹czenie internetowe");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy pobieraniu danych. Sprawdï¿½ poï¿½ï¿½czenie internetowe");
 			System.err.println(e);
 		}
 	}
@@ -122,7 +122,7 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy pobieraniu danych. SprawdŸ po³¹czenie internetowe");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy pobieraniu danych. Sprawdï¿½ poï¿½ï¿½czenie internetowe");
 			System.err.println(e);
 		}
 	}
@@ -161,7 +161,7 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy pobieraniu danych. SprawdŸ po³¹czenie internetowe");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy pobieraniu danych. Sprawdï¿½ poï¿½ï¿½czenie internetowe");
 			System.err.println(e);
 		}
 	}
@@ -203,7 +203,7 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy pobieraniu danych. SprawdŸ po³¹czenie internetowe");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy pobieraniu danych. Sprawdï¿½ poï¿½ï¿½czenie internetowe");
 			System.err.println(e);
 		}
 	}
@@ -224,7 +224,7 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy aktualizowaniu danych.");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy aktualizowaniu danych.");
 			System.err.println(e);
 			e.printStackTrace();
 		}
@@ -248,43 +248,25 @@ public class BazaDanych
 		    String query = query1 + query2 + query3 + query4 + query5 + query6 + query7 + query8;
 		    stmt.executeUpdate(query);
 			stmt.close();
-			JOptionPane.showMessageDialog(null, "Dane zosta³y zaktualizowane.");
+			JOptionPane.showMessageDialog(null, "Dane zostaï¿½y zaktualizowane.");
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy aktualizowaniu danych.");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy aktualizowaniu danych.");
 			System.err.println(e);
 			e.printStackTrace();
 		}
-	}
-	public static void insert() throws SQLException 
-	{
-		try
-		{
-			
-		}
-		catch(Exception e)
-
-		{
-			JOptionPane.showMessageDialog(null, "Nie uda³o siê zapisaæ danych. SprawdŸ po³¹czenie internetowe");
-			System.err.println(e);
-		}
-		/*
-		wiekString = Integer.toString(wiek);
-		String query = "INSERT INTO Pracownicy " +
-           				"VALUES ('"+imie+"', '"+nazwisko+"', '"+wiekString+"')";
-		lastId=lastInsertedId(query);*/
-
 	}
 	public static int getLastId(String nazwaID, String tabela) throws SQLException
 	{
 		int lastId=0;
 		try
 		{
-			String query = "SELECT "+nazwaID+" FROM "+tabela; // Select
+			String query1 = " SELECT TOP 1 "+nazwaID+" FROM "+tabela;
+			String query2 = " ORDER BY "+nazwaID+" DESC";
+			String query = query1+query2;
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
-			
 			while(rs.next())
 			{
 				lastId = rs.getInt(nazwaID);
@@ -295,44 +277,24 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			System.out.println("Nie uda³o siê pobraæ id. Brak po³¹czenia z baz¹");
+			System.out.println("Nie udaÅ‚o siÄ™ pobraÄ‡ id. Brak poï¿½ï¿½czenia z bazï¿½");
 			System.err.println(e);
 			return -1;
 		}
 	}
-	public static int lastInsertedId(String query) 
-	{
-		int id=-1;
-		try 
-		{	
-		    Statement stmt = conn.createStatement();
-		    stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
-		    ResultSet rs = stmt.getGeneratedKeys();
-		    if (rs.next()) id=rs.getInt(1);
-		    rs.close();
-		    stmt.close();
-		    return id;
-		} 
-		catch (Exception e) 
-		{
-			System.out.println("Nie uda³o siê pobraæ id. Brak po³¹czenia z baz¹");
-			System.err.println(e);
-			return -1;
-		}
-		
-	}
+	
 	public static boolean dbConnection() throws SQLException, ClassNotFoundException
 	{
 		try
 		{
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); //Rejestracja sterownika
-			String connectionURL = "jdbc:sqlserver://217.113.235.83:1433;user=zatrans_db_user;password=%NeVer_mind.52;useUnicode=true;characterEncoding=utf8;databaseName=dbTest;"; //Po³¹czenie z baz¹
+			String connectionURL = "jdbc:sqlserver://217.113.235.83:1433;user=zatrans_db_user;password=%NeVer_mind.52;useUnicode=true;characterEncoding=utf8;databaseName=dbTest;"; //Poï¿½ï¿½czenie z bazï¿½
 			conn = DriverManager.getConnection(connectionURL);
 			return true;
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy pobieraniu danych. SprawdŸ po³¹czenie internetowe");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy pobieraniu danych. Sprawdï¿½ poï¿½ï¿½czenie internetowe");
 			System.err.println(e);
 			return false;
 		}
@@ -354,12 +316,42 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "B³¹d przy aktualizowaniu danych.");
+			JOptionPane.showMessageDialog(null, "Bï¿½ï¿½d przy aktualizowaniu danych.");
 			System.err.println(e);
 			e.printStackTrace();
 		}
 	}
-
+	
+	public static boolean isYearInDataBase(int wybranyRok)
+	{
+		boolean isYearInDatabase = false;
+		try
+		{
+			String query1 = " select rok from Lata";
+			String query2 = " where rok = "+wybranyRok+"";
+		      
+		    Statement stmt = conn.createStatement();
+		    String query = query1 + query2;
+		    ResultSet rs = stmt.executeQuery(query);
+			
+			while(rs.next())
+			{
+				isYearInDatabase = true;
+			}
+			rs.close();
+			stmt.close();
+			
+			return isYearInDatabase;
+		}
+		catch(SQLException e)
+		{
+			JOptionPane.showMessageDialog(null, "Brak poÅ‚Ä…czenia z bazÄ… danych.");
+			System.err.println(e);
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public static int isDayInDatabase(int wybranyDzien, int wybranyMiesiac, int wybranyRok) 
 	{
 		int isSomething = 0;
@@ -387,10 +379,112 @@ public class BazaDanych
 		}
 		catch(SQLException e)
 		{
-			JOptionPane.showMessageDialog(null, "Brak po³¹czenia z baz¹ danych.");
+			JOptionPane.showMessageDialog(null, "Brak poÅ‚Ä…czenia z bazÄ… danych.");
+			System.err.println(e);
+			return -1;
+		}
+		
+	}
+	public static int getIdOfChosenYear(int wybranyRok)
+	{
+		int idRoku = -1;
+		try
+		{
+			String query1 = " select idRoku from Lata";
+			String query2 = " where rok = "+wybranyRok+"";
+		    Statement stmt = conn.createStatement();
+		    String query = query1 + query2;
+		    ResultSet rs = stmt.executeQuery(query);
+			while(rs.next())
+			{
+				idRoku = rs.getInt("idRoku");
+			}
+			rs.close();
+			stmt.close();
+			return idRoku;
+		}
+		catch(SQLException e)
+		{
+			JOptionPane.showMessageDialog(null, "Brak poÅ‚Ä…czenia z bazÄ… danych.");
 			System.err.println(e);
 			e.printStackTrace();
 			return -1;
+		}
+	}
+	
+	public static void insertNewYear(int idRoku, int wybranyRok) 
+	{
+		try
+		{
+			String query1 = " insert into Lata";
+	        String query2 = " values ("+idRoku+", "+wybranyRok+")";
+	        
+	        String query = query1+query2;
+			Statement stmt = conn.createStatement();
+		    stmt.executeUpdate(query);
+		}
+		catch(SQLException e)
+		{
+			JOptionPane.showMessageDialog(null, "Brak poÅ‚Ä…czenia z bazÄ… danych.");
+			System.err.println(e);
+			System.out.println("Nie dodano roku");
+		}
+	}
+
+	public static void insertNewDay(int idWybranegoDnia, int wybranyDzien, int idWybranegoMiesiaca, int idWybranegoRoku) 
+	{
+		try
+		{
+			String query1 = " insert into DniPracy";
+	        String query2 = " values ("+idWybranegoDnia+", "+wybranyDzien+", "+idWybranegoMiesiaca+", "+idWybranegoRoku+")";
+	        
+	        String query = query1+query2;
+			Statement stmt = conn.createStatement();
+		    stmt.executeUpdate(query);
+		}
+		catch(SQLException e)
+		{
+			JOptionPane.showMessageDialog(null, "Brak poÅ‚Ä…czenia z bazÄ… danych.");
+			System.err.println(e);
+			System.out.println("Nie dodano dnia");
+		}
+	}
+
+	public static void insertNewAktywnosc(int idNowejAktywnosci, int idWybranegoDnia, String nazwaAktywnosci,String godzinaOd, String godzinaDo, String opis) 
+	{
+		try
+		{
+			String query1 = " insert into Aktywnosci";
+	        String query2 = " values ("+idNowejAktywnosci+", "+idWybranegoDnia+", '"+nazwaAktywnosci+"', '"+godzinaOd+"', '"+godzinaDo+"', '"+opis+"')";
+	        
+	        String query = query1+query2;
+			Statement stmt = conn.createStatement();
+		    stmt.executeUpdate(query);
+		}
+		catch(SQLException e)
+		{
+			JOptionPane.showMessageDialog(null, "Brak poÅ‚Ä…czenia z bazÄ… danych.");
+			System.err.println(e);
+			System.out.println("Nie dodano aktywnosci");
+		}
+	}
+
+	public static void insertNewPracownikWAktywnosci(int idNowegoPracownikaWAktywnosci, int idWybranejAktywnosci,int idPrac, float stawka, float stawkaFirmy, String waluta)
+	{
+		try
+		{
+			String query1 = " insert into PracownicyWAktywnosci";
+	        String query2 = " values ("+idNowegoPracownikaWAktywnosci+", "+idWybranejAktywnosci+", "+idPrac+", "+stawka+", "+stawkaFirmy+", '"+waluta+"')";
+	        
+	        String query = query1+query2;
+			Statement stmt = conn.createStatement();
+		    stmt.executeUpdate(query);
+		}
+		catch(SQLException e)
+		{
+			JOptionPane.showMessageDialog(null, "Brak poÅ‚Ä…czenia z bazÄ… danych.");
+			System.err.println(e);
+			System.out.println("Nie dodano aktywnosci");
 		}
 		
 	}

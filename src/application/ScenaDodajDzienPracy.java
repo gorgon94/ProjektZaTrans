@@ -104,7 +104,7 @@ public class ScenaDodajDzienPracy implements Initializable
 		wybranyDzien = Integer.parseInt(data.substring(8, 10));
 		wybranyMiesiac = Integer.parseInt(data.substring(5, 7));
 		wybranyRok = Integer.parseInt(data.substring(0, 4));
-		isDayInDatabase = BazaDanych.isDayInDatabase(wybranyDzien,wybranyMiesiac, wybranyRok);
+		isDayInDatabase = BazaDanych.isDayInDatabase(wybranyDzien,wybranyMiesiac,wybranyRok);
 		idDayAlert();
 	
 	}
@@ -139,6 +139,7 @@ public class ScenaDodajDzienPracy implements Initializable
 				minutaOdCombo.setValue(listaNowychAktywnosci.get(aktywnoscChosen).getGodzinaOd().substring(3, 5));
 			}
 			isAktywnoscChosen = true;
+			clearDanePracownika();
 			
 		} 
 		catch(ArrayIndexOutOfBoundsException e) 
@@ -243,6 +244,9 @@ public class ScenaDodajDzienPracy implements Initializable
 						//wyswietlanie w listview
 						pracownicyListView.setItems(listaPozostalychPracownikowString);
 						wybraniPracownicyListView.setItems(listaWybranychPracownikowString);
+						
+						clearDanePracownika();
+						
 					}///////////////////////////
 					else//jesli wybrano aktywnosc
 					{////////////////////////////
@@ -267,7 +271,16 @@ public class ScenaDodajDzienPracy implements Initializable
 				else // jeśli wybrano aktywnosc
 				{
 					//pokazujemy jakie stawki oraz walute ma pracownik
-					wyswietlDaneWybranychPracownikow();
+					wybranyPracownikLabel.setText(wybranyPracownikItemSelected);	
+					for(int i=0; i<listaWybranychPracownikow.size(); i++)
+					{
+						if(listaWybranychPracownikow.get(i).getIdNowejAktywnosci() == aktywnoscChosen && listaWybranychPracownikow.get(i).getNazwaWybranegoPracownika().equals(wybranyPracownikItemSelected))
+						{	
+							stawkaText.setText(Float.toString(listaWybranychPracownikow.get(i).getStawka())); 
+							stawkaFirmyText.setText(Float.toString(listaWybranychPracownikow.get(i).getStawkaFirmy()));
+							walutaCombo.setValue(listaWybranychPracownikow.get(i).getWaluta());
+						}
+					}
 				}
 			}
 			aktywnoscItemSelected=null;		
@@ -328,9 +341,11 @@ public class ScenaDodajDzienPracy implements Initializable
 								listaNowychAktywnosci.add(new NowaAktywnosc(nazwa, opis,godzinaOd, godzinaDo));
 								
 								//wyczyszczenie i dodanie wszystkich pracownikow do tempPozostali wraz z nowym id
-								dodajPracownikowDoListyGlownej();
-								clearDaneAktywnosci();
+								
 								aktywnosciListView.setItems(listaNazwAktywnosci);
+								clearDanePracownika();
+								clearDaneAktywnosci();
+								dodajPracownikowDoListyGlownej();
 							}	
 						} 
 						else {}//jesli uzytkownik wcisnie cancel		
@@ -352,7 +367,6 @@ public class ScenaDodajDzienPracy implements Initializable
 				try{throw new wyjatki.NieMoznaNadpisacAktywnosciException();}
 				catch(NieMoznaNadpisacAktywnosciException er){}
 			}
-			bUsunZaznaczenieClicked();
 		}
 		catch(Exception e)
 		{
@@ -376,7 +390,55 @@ public class ScenaDodajDzienPracy implements Initializable
 		{
 			try //obsługa jesli wszytsko ok
 			{
+				if(BazaDanych.isYearInDataBase(wybranyRok) == true)
+				{
+					//dodaj nowy rok do bazy
+					int lastIdRoku = BazaDanych.getLastId("idRoku","Lata");
+					BazaDanych.insertNewYear(lastIdRoku+1,wybranyRok);
+				}
+				/////////////////////////////////////////////////////////////////////////
+				int lastIdDnia = BazaDanych.getLastId("idDnia","DniPracy");
 				
+				int idWybranegoRoku = BazaDanych.getIdOfChosenYear(wybranyRok);
+				int idWybranegoMiesiaca = wybranyMiesiac;
+				int idWybranegoDnia = lastIdDnia+1;
+				BazaDanych.insertNewDay(idWybranegoDnia,wybranyDzien,idWybranegoMiesiaca, idWybranegoRoku);
+				
+				//////////////////////////////////////////////////////////////////////////
+				for(int i=0; i<listaNowychAktywnosci.size(); i++)
+				{
+					int lastIdAktywnosci = BazaDanych.getLastId("idAktywnosci","Aktywnosci");
+					int idWybranejAktywnosci = lastIdAktywnosci +1;
+					String nazwaAktywnosci = listaNowychAktywnosci.get(i).getNazwa();
+					String godzinaOd = listaNowychAktywnosci.get(i).getGodzinaOd();
+					String godzinaDo = listaNowychAktywnosci.get(i).getGodzinaDo();
+					String opis = listaNowychAktywnosci.get(i).getOpis();
+					
+					BazaDanych.insertNewAktywnosc(idWybranejAktywnosci, idWybranegoDnia, nazwaAktywnosci, godzinaOd, godzinaDo, opis);
+					System.out.println(idWybranejAktywnosci+" "+idWybranegoDnia+" "+nazwaAktywnosci+" "+godzinaOd+" "+godzinaDo+" "+opis);
+					System.out.println();
+					
+					for(int j=0; j<listaWybranychPracownikow.size();j++)
+					{
+						int lastIdPracownkowWAktywnosci = BazaDanych.getLastId("id","PracownicyWAktywnosci");
+						int idNowegoPracownikaWAktywnosci = lastIdPracownkowWAktywnosci +1;
+						
+						if(listaWybranychPracownikow.get(j).getIdNowejAktywnosci() == i)
+						{
+							String nazwaPracownika = listaWybranychPracownikow.get(j).getNazwaWybranegoPracownika();
+							String waluta = listaWybranychPracownikow.get(j).getWaluta();
+							int idPrac = listaWybranychPracownikow.get(j).getIdPrac();
+							float stawka = listaWybranychPracownikow.get(j).getStawka();
+							float stawkaFirmy = listaWybranychPracownikow.get(j).getStawkaFirmy();
+							
+							BazaDanych.insertNewPracownikWAktywnosci(idNowegoPracownikaWAktywnosci, idWybranejAktywnosci, idPrac, stawka, stawkaFirmy, waluta);
+							System.out.println(nazwaPracownika+": "+idNowegoPracownikaWAktywnosci+" "+idWybranejAktywnosci+" "+idPrac+"      "+stawka+" "+stawkaFirmy+" "+waluta);
+						}
+					}
+					System.out.println();
+					System.out.println();
+					
+				}	
 			}
 			catch(Exception e)
 			{
@@ -387,14 +449,7 @@ public class ScenaDodajDzienPracy implements Initializable
 	
 	public void bUsunZaznaczenieClicked() throws SQLException
 	{
-		
-		wybranyPracownikLabel.setText("Nie wybrano pracownika");
-		isWybranyPracownikChosen = false;
-		stawkaText.clear();
-		stawkaFirmyText.clear();
-		walutaCombo.setValue("");
-		isAktywnoscChosen = false;//odznaczenie w danych aktywnosci
-		aktywnoscItemSelected = null; //usuniecie double clikca z aktywnosic
+		clearDanePracownika();
 		clearDaneAktywnosci(); // wyczyszczenie okna
 		dodajPracownikowDoListyGlownej(); // wyczysczenie okien z pracownikami oraz załadowanie wszystkich pracownikow z bazy do pozostalych pracownikkoa
 	}
@@ -413,6 +468,9 @@ public class ScenaDodajDzienPracy implements Initializable
 			
 			try{throw new wyjatki.DodanoPracownikaException();}
 			catch(DodanoPracownikaException er){}
+			
+			clearDanePracownika();
+			
 		}
 		catch(Exception e)
 		{
@@ -420,48 +478,9 @@ public class ScenaDodajDzienPracy implements Initializable
 		}
 	}
 ///////////////////////////////////////////////////////////////////////////////////////////dodatkowe metody
-	public void wyswietlDaneWybranychPracownikow()
-	{
-		stawkaText.clear();
-		stawkaFirmyText.clear();
-		walutaCombo.setValue("");
-		wybranyPracownikLabel.setText("Nie wybrano pracownika");	
-		for(int i=0; i<listaWybranychPracownikow.size(); i++)
-		{
-			if(listaWybranychPracownikow.get(i).getIdNowejAktywnosci() == aktywnoscChosen && listaWybranychPracownikow.get(i).getNazwaWybranegoPracownika().equals(wybranyPracownikItemSelected))
-			{	
-				stawkaText.setText(Float.toString(listaWybranychPracownikow.get(i).getStawka())); 
-				stawkaFirmyText.setText(Float.toString(listaWybranychPracownikow.get(i).getStawkaFirmy()));
-				walutaCombo.setValue(listaWybranychPracownikow.get(i).getWaluta());
-			}
-		}
-	}
-	
 	public void usunZaznaczenie() throws SQLException //fukcja wykonujaca sie po kliknieciu w coś poza elementami okna
 	{
-		if(isWybranyPracownikChosen == true)
-		{
-			try
-			{	//edycja danych pracownika
-				float stawka = Float.parseFloat(stawkaText.getText());
-				float stawkaFirmy = Float.parseFloat(stawkaFirmyText.getText());
-				String waluta = walutaCombo.getValue();
-				
-				wybranyPracownikLabel.setText(tempWybrani.get(wybranyPracownikChosen).getNazwaWybranegoPracownika());
-				tempWybrani.get(wybranyPracownikChosen).setStawka(stawka);
-				tempWybrani.get(wybranyPracownikChosen).setStawkaFirmy(stawkaFirmy);
-				tempWybrani.get(wybranyPracownikChosen).setWaluta(waluta);
-			}
-			catch(Exception e)
-			{
-				System.err.println(e);
-			}	
-		}
-		wybranyPracownikLabel.setText("Nie wybrano pracownika");
-		isWybranyPracownikChosen = false;
-		stawkaText.clear();
-		stawkaFirmyText.clear();
-		walutaCombo.setValue("");
+
 	}
 	
 	public void wyswietlPozostalychIWybranychPracownikow()
@@ -527,6 +546,14 @@ public class ScenaDodajDzienPracy implements Initializable
 			
 		}
 	}
+	public void clearDanePracownika()
+	{
+		wybranyPracownikLabel.setText("Nie wybrano pracownika");
+		isWybranyPracownikChosen = false;
+		stawkaText.clear();
+		stawkaFirmyText.clear();
+		walutaCombo.setValue("");
+	}
 	public void clearDaneAktywnosci()
 	{
 		godzinaOdCombo.setValue("");
@@ -537,6 +564,7 @@ public class ScenaDodajDzienPracy implements Initializable
 		nazwaAktywnosciText.clear();
 		opisTextArea.clear();
 		isAktywnoscChosen = false;
+		aktywnoscItemSelected = null; 
 	}
 	public void clearAktywnosci()
 	{
